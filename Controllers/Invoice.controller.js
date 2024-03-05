@@ -67,7 +67,7 @@ const generatePdf = async (req, res) => {
     await browser.close();
     res.contentType('application/pdf').send(pdfBuffer);
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    console.error('Error to generate pdf:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
