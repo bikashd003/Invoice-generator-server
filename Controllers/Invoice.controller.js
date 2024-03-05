@@ -52,15 +52,17 @@ const getInvoiceById = async (req, res) => {
 const generatePdf = async (req, res) => {
   try {
     const { url, headers } = req.body; // Pass headers along with the URL
-   
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      executablePath: '/path/to/chrome', // Specify the path to Chrome executable
+      args: ['--no-sandbox', '--disable-setuid-sandbox'], // Add additional arguments as needed
+    });
     const page = await browser.newPage();
     
     await page.setExtraHTTPHeaders(headers);
     
     await page.goto(url, { waitUntil: "networkidle0" });
 
-    const pdfBuffer = await page.pdf({ path: "invoice.pdf", format: 'A4', printBackground: true });
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
     await browser.close();
     res.contentType('application/pdf').send(pdfBuffer);
   } catch (error) {
