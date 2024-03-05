@@ -1,6 +1,6 @@
 import { Invoice } from "../Models/Invoice.model.js"
 import puppeteer from 'puppeteer';
-import chrome from 'chrome-aws-lambda';
+import chromium from 'chrome-aws-lambda';
 const createInvoice = async (req, res) => {
   try {
     const { products, grandTotal } = req.body;
@@ -52,9 +52,10 @@ const getInvoiceById = async (req, res) => {
 const generatePdf = async (req, res) => {
   try {
     const { url, headers } = req.body; // Pass headers along with the URL
-    const browser = await puppeteer.launch({
-      executablePath: '/path/to/chrome', // Specify the path to Chrome executable
-      args: ['--no-sandbox', '--disable-setuid-sandbox'], // Add additional arguments as needed
+    const browser = await chromium.puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
     });
     const page = await browser.newPage();
     
