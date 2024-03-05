@@ -1,6 +1,6 @@
 import { Invoice } from "../Models/Invoice.model.js"
 import puppeteer from 'puppeteer';
-import chromium from 'chrome-aws-lambda';
+
 const createInvoice = async (req, res) => {
   try {
     const { products, grandTotal } = req.body;
@@ -49,29 +49,25 @@ const getInvoiceById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const generatePdf = async (req, res) => {
   try {
-    const { url, headers } = req.body; // Pass headers along with the URL
-    const browser = await chromium.puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-    });
+    const { url,headers } = req.body; 
+    
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    
     await page.setExtraHTTPHeaders(headers);
-    
-    await page.goto(url, { waitUntil: "networkidle0" });
-
-    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+    await page.goto(url, { waitUntil: 'networkidle0' });
+  
+    const pdfBuffer = await page.pdf({format: 'A4', printBackground: true });
+  
     await browser.close();
     res.contentType('application/pdf').send(pdfBuffer);
   } catch (error) {
-    console.error('Error to generate pdf:', error);
+    console.error('Error generating PDF:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 
   
 
